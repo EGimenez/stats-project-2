@@ -10,6 +10,7 @@ def gen_data(MU, LF, SIG, n):
 	# LOADING FACTORS
 	# SIGMA
 	# n: number of generated Ys
+	# return a [m x n] matrix
 
 	Ys = None
 
@@ -18,4 +19,10 @@ def gen_data(MU, LF, SIG, n):
 
 if __name__ == '__main__':
 	# For debugging
+	# We define
+	# MU
+	# LOADING FACTORS
+	# SIGMA
+	# n: number of generated Ys
+	# and cal gen_data function
 	pass
