@@ -1,12 +1,14 @@
+import numpy as np
+
 def break_params(theta, y_dim, z_dim):
 	# TODO
 	# MU <- theta()
 	# LF <- theta()
 	# SIG <- theta()
 
-	MU = None
-	LF = None
-	SIG = None
+	MU = theta[:,y_dim]
+	LF = np.matrix(theta[y_dim:-y_dim], (y_dim, z_dim))
+	SIG = theta[-y_dim:]
 
 	return MU, LF, SIG
 
