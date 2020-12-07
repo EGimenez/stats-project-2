@@ -143,7 +143,7 @@ class FactorAnalysisModel(object):
 
 		# -1/2 (x-J_mu_new)' * J_sig_new_inv * (x -J_mu_new) -1/2 log(det(J_sig_new))
 		# -1/2 log(det(J_sig_new))
-		result += -1/2 * self.mvd_new.get_J_sig_log_det()
+		result += self.mvd_new.get_J_sig_log_det()
 
 		# -1/2 (x-J_mu_new)' * J_sig_new_inv * (x -J_mu_new)
 		for i in range(J_sig_new_inv.shape[0]):
@@ -159,7 +159,7 @@ class FactorAnalysisModel(object):
 					else:
 						result += J_sig_new_inv[i, j] * (x[i] - J_mu_new[i]) * CY_mu_old[j]
 
-		return result
+		return -1/2*result
 
 	def q(self):
 		result = 0

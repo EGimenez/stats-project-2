@@ -11,7 +11,7 @@ def break_params(theta, y_dim, z_dim):
 
 	MU = theta[:y_dim].reshape((y_dim, 1))
 	LF = theta[y_dim:-y_dim].reshape((y_dim, z_dim))
-	SIG = theta[-y_dim:]**2 # This **2 is to avoid restrictions on the optimizer
+	SIG = theta[-y_dim:]**2 # + 0.00000001 # This **2 is to avoid restrictions on the optimizer
 	return MU, LF, SIG
 
 
