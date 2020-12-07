@@ -1,7 +1,9 @@
 from FactorAnalysisDataGeneratingProcess import gen_data
-from FactorAnalysisOptimizer import get_g
 from FactorAnalysisModel import FactorAnalysisModel as FAM
-from FactorAnalysisModel import MultivariateDistribution as MVD
+from FactorAnalysisModel import MultivariateDistribution
+from FactorAnalysisOptimizer import get_f, break_params
+import numpy as np
+from scipy.optimize import minimize
 
 if __name__ == '__main__':
 	# MU [m x 1]
@@ -10,17 +12,42 @@ if __name__ == '__main__':
 	# n: number of generated Ys
 	# Y ~ N(MU + LF*Z, SIG) [m x n]
 
-	CZ_MU = None
-	CZ_LF = None
-	CZ_SIGMA = None
-	n = None
+	y_dim = 2
+	z_dim = 1
+	CZ_MU = np.zeros((2, 1))
+	CZ_L = np.matrix([[1], [3]])
+	CZ_SIG = np.array([1, 1])
 
-	Y = gen_data(CZ_MU, CZ_LF, CZ_SIGMA, n)
-	init_values = None
-	mvd_old = MVD(Y, init_values)
-	mvd_new = MVD(Y, init_values)
+	Y = gen_data(CZ_MU, CZ_L, CZ_SIG, 10)
+
+	mvd_old = MultivariateDistribution(Y)
+	mvd_new = MultivariateDistribution(Y)
+
+	init_guess = np.array([0, 0, 0, 0, .9, .9])
+	mu_init, l_init, sig_init = break_params(init_guess, y_dim, z_dim)
+
+	mvd_old.set_theta(mu_init, l_init, sig_init)
+	mvd_new.set_theta(mu_init, l_init, sig_init)
+
 	fam = FAM(mvd_old, mvd_new)
-	g = get_g(fam)
 
-	# TODO: Optimize on f
-	pass
+	f = get_f(fam, y_dim, z_dim)
+
+	res = minimize(f,
+	               init_guess,
+	               method='L-BFGS-B',
+	               options={'maxiter': 1000})
+
+
+	for s in range(100):
+		mu, lf, sig = break_params(res.x, y_dim, z_dim)
+		fam.mvd_old.set_theta(mu, lf, sig)
+		f = get_f(fam, y_dim, z_dim)
+		res = minimize(f,
+		               res.x,
+		               method='L-BFGS-B',
+		               options={'maxiter': 1000})
+
+	mu, lf, sig = break_params(res.x, y_dim, z_dim)
+
+	print('Hey ho lets go')
